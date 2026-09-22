@@ -1,11 +1,10 @@
-import express from "express";
+import "dotenv/config";
+import { app } from "./app.js";
+import { connectDb } from "./config/Db.js";
 
-const app = express();
-const port = 5000;
+const port = Number(process.env.PORT ?? 5000);
 
-app.get("/", (_req, res) => {
-  res.send("Hello World");
-});
+await connectDb();
 
 app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);
