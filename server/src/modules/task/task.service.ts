@@ -4,6 +4,7 @@ export type TaskInput = {
   title?: string;
   description?: string;
   dateTime?: Date;
+  endTime?: Date;
   priority?: "low" | "medium" | "high";
   status?: "in_progress" | "completed";
 };

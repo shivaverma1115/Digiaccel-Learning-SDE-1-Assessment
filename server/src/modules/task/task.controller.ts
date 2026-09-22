@@ -68,6 +68,18 @@ function readTaskInput(body: Request["body"], partial: boolean): TaskInput | str
     return "dateTime is required";
   }
 
+  if (body.endTime !== undefined && body.endTime !== null && body.endTime !== "") {
+    const endTime = parseDate(body.endTime);
+    if (!endTime) {
+      return "endTime must be a valid date";
+    }
+    input.endTime = endTime;
+  }
+
+  if (input.dateTime && input.endTime && input.endTime < input.dateTime) {
+    return "endTime must be after the start time";
+  }
+
   if (body.priority !== undefined) {
     if (!isPriority(body.priority)) {
       return "priority must be low, medium, or high";
