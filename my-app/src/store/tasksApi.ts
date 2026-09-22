@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { parseKey } from "@/lib/dates";
 
 export type Priority = "low" | "medium" | "high";
 export type TaskStatus = "in_progress" | "completed";
@@ -29,10 +30,21 @@ export const tasksApi = createApi({
   }),
   tagTypes: ["Task"],
   endpoints: (builder) => ({
-    getTasks: builder.query<{ tasks: Task[] }, string | void>({
-      query: (search) => {
-        const keyword = typeof search === "string" ? search.trim() : "";
-        return keyword ? `/api/tasks?search=${encodeURIComponent(keyword)}` : "/api/tasks";
+    getTasks: builder.query<{ tasks: Task[] }, { search?: string; date?: string } | void>({
+      query: (args) => {
+        const params = new URLSearchParams();
+        const search = args?.search?.trim();
+        if (search) params.set("search", search);
+        if (args?.date && /^\d{4}-\d{2}-\d{2}$/.test(args.date)) {
+          const start = parseKey(args.date);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 1);
+          params.set("date", args.date);
+          params.set("from", start.toISOString());
+          params.set("to", end.toISOString());
+        }
+        const query = params.toString();
+        return query ? `/api/tasks?${query}` : "/api/tasks";
       },
       providesTags: ["Task"],
     }),

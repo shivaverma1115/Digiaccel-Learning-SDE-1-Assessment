@@ -8,7 +8,7 @@ import { SearchField } from "@/components/SearchField";
 import { StatCard } from "@/components/StatCard";
 import { TaskRow } from "@/components/TaskRow";
 import { TaskSheet } from "@/components/TaskSheet";
-import { dateKeyFromIso, stripDays, weekBounds } from "@/lib/dates";
+import { stripDays, weekBounds } from "@/lib/dates";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { useDeleteTaskMutation, useGetTasksQuery, useUpdateTaskMutation } from "@/store/tasksApi";
 import { openCreate, openEdit, setSelectedDate } from "@/store/uiSlice";
@@ -16,7 +16,8 @@ import { openCreate, openEdit, setSelectedDate } from "@/store/uiSlice";
 export default function HomePage() {
   const dispatch = useAppDispatch();
   const selectedDate = useAppSelector((state) => state.ui.selectedDate);
-  const { data, isLoading, isError } = useGetTasksQuery();
+  const { data } = useGetTasksQuery();
+  const { data: dayData, isLoading, isError } = useGetTasksQuery({ date: selectedDate });
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
   const tasks = data?.tasks ?? [];
@@ -27,8 +28,9 @@ export default function HomePage() {
   });
   const completed = weekTasks.filter((task) => task.status === "completed").length;
   const pending = weekTasks.length - completed;
-  const progress = weekTasks.length === 0 ? 0 : (completed / weekTasks.length) * 100;
-  const todayTasks = tasks.filter((task) => dateKeyFromIso(task.dateTime) === selectedDate);
+  const todayTasks = dayData?.tasks ?? [];
+  const completedToday = todayTasks.filter((task) => task.status === "completed").length;
+  const progress = todayTasks.length === 0 ? 0 : (completedToday / todayTasks.length) * 100;
 
   return (
     <PhoneFrame>

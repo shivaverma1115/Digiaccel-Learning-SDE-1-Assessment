@@ -12,6 +12,7 @@ export type TaskInput = {
 type TaskFilter = {
   status?: TaskInput["status"];
   $or?: Array<{ title: RegExp } | { description: RegExp }>;
+  dateTime?: { $gte: Date; $lt: Date };
 };
 
 function startOfWeekUtc(date: Date): Date {

@@ -3,8 +3,13 @@ import type { NextRequest } from "next/server";
 const backendUrl = process.env.API_URL;
 
 export async function GET(request: NextRequest) {
-  const search = request.nextUrl.searchParams.get("search");
-  const path = search ? `/api/tasks?search=${encodeURIComponent(search)}` : "/api/tasks";
+  const params = new URLSearchParams();
+  for (const key of ["search", "date", "from", "to"]) {
+    const value = request.nextUrl.searchParams.get(key);
+    if (value) params.set(key, value);
+  }
+  const query = params.toString();
+  const path = query ? `/api/tasks?${query}` : "/api/tasks";
   const response = await fetch(`${backendUrl}${path}`, { cache: "no-store" });
 
   return new Response(await response.text(), {

@@ -125,8 +125,10 @@ export async function listTasks(req: Request, res: Response): Promise<void> {
   const filter: {
     status?: Status;
     $or?: Array<{ title: RegExp } | { description: RegExp }>;
+    dateTime?: { $gte: Date; $lt: Date };
   } = {};
   const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+  const date = typeof req.query.date === "string" ? req.query.date.trim() : "";
 
   if (search) {
     const pattern = new RegExp(escapeRegex(search), "i");
@@ -139,6 +141,26 @@ export async function listTasks(req: Request, res: Response): Promise<void> {
       return;
     }
     filter.status = req.query.status;
+  }
+
+  if (req.query.from !== undefined || req.query.to !== undefined) {
+    const from = typeof req.query.from === "string" ? parseDate(req.query.from) : undefined;
+    const to = typeof req.query.to === "string" ? parseDate(req.query.to) : undefined;
+    if (!from || !to || to <= from) {
+      res.status(400).json({ message: "from and to must be a valid date range" });
+      return;
+    }
+    filter.dateTime = { $gte: from, $lt: to };
+  } else if (date) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      res.status(400).json({ message: "date must be YYYY-MM-DD" });
+      return;
+    }
+    const [year, month, day] = date.split("-").map(Number);
+    filter.dateTime = {
+      $gte: new Date(Date.UTC(year, month - 1, day)),
+      $lt: new Date(Date.UTC(year, month - 1, day + 1)),
+    };
   }
 
   const tasks = await findTasks(filter);

@@ -13,9 +13,10 @@ export default function SearchPage() {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce(keyword, 400);
-  const { data, isFetching } = useGetTasksQuery(debouncedKeyword, {
-    skip: debouncedKeyword.trim() === "",
-  });
+  const { data, isFetching } = useGetTasksQuery(
+    { search: debouncedKeyword },
+    { skip: debouncedKeyword.trim() === "" },
+  );
   const [updateTask] = useUpdateTaskMutation();
   const tasks = debouncedKeyword.trim() ? (data?.tasks ?? []) : [];
 
