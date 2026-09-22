@@ -1,3 +1,4 @@
+import { Check, Pencil, Trash2 } from "lucide-react";
 import type { Task } from "@/store/tasksApi";
 
 export function TaskRow({
@@ -14,46 +15,49 @@ export function TaskRow({
   const done = task.status === "completed";
 
   return (
-    <div className="flex items-center gap-3 border-b border-[#f2f2f2] py-3">
+    <div className="flex items-center gap-3 border-b border-[#f3f3f3] py-4">
       <button
         type="button"
         aria-label={done ? "Mark in progress" : "Mark completed"}
         onClick={onToggle}
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
-          done ? "border-[#4f67f6] bg-[#4f67f6] text-white" : "border-[#cfcfcf] bg-white"
-        }`}
+        className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center border ${done ? "border-[#5b6cf6]" : "border-[#d7d7d7] bg-white"
+          }`}
       >
-        {done ? "✓" : ""}
+        {done ? <Check size={14} strokeWidth={2} className="text-[#5b6cf6]" aria-hidden /> : null}
       </button>
-      <button type="button" onClick={onEdit} className="flex-1 truncate text-left text-sm">
+      <button
+        type="button"
+        onClick={onEdit}
+        className={`flex-1 truncate text-left text-[15px] ${done ? "text-[#9a9a9a] line-through" : "text-[#1c1c1c]"
+          }`}
+      >
         {task.title}
       </button>
-      {onDelete ? (
-        <button type="button" aria-label="Delete task" onClick={onDelete} className="text-[#b0b0b0]">
-          <TrashIcon />
-        </button>
-      ) : null}
-      {onEdit ? (
-        <button type="button" aria-label="Edit task" onClick={onEdit} className="text-[#b0b0b0]">
-          <PencilIcon />
-        </button>
-      ) : null}
+      <div className="flex items-center gap-3 text-[#d0d0d0]">
+        {onDelete ? (
+          <button
+            type="button"
+            aria-label="Delete task"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to delete this task?")) onDelete();
+            }}
+          >
+            <Trash2 size={25} strokeWidth={1.6} />
+          </button>
+        ) : null}
+        {onEdit ? (
+          <button
+            type="button"
+            aria-label="Edit task"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to edit this task?")) onEdit();
+            }}
+          >
+            <Pencil size={22} strokeWidth={1.6} />
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
 
-function TrashIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 7h16M9 7V5h6v2M8 7l1 13h6l1-13" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function PencilIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}

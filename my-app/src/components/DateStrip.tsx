@@ -19,12 +19,12 @@ export function DateStrip({
             key={key}
             type="button"
             onClick={() => onSelect(key)}
-            className={`flex flex-col items-center rounded-lg py-2 text-[11px] ${
+            className={`flex flex-col items-center rounded-sm py-2 text-[11px] ${
               selected ? "bg-[#4f67f6] text-white" : "text-[#9a9a9a]"
             }`}
           >
             <span>{weekdayLabel(day)}</span>
-            <span className={`mt-1 text-sm font-semibold ${selected ? "text-white" : "text-[#222]"}`}>
+            <span className={`mt-1 text-sm font-base ${selected ? "text-white" : "text-gray-400"}`}>
               {String(day.getDate()).padStart(2, "0")}
             </span>
             <span

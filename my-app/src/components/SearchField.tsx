@@ -12,7 +12,7 @@ export function SearchField({
   const readOnly = !onChange;
 
   return (
-    <label className="flex h-11 items-center gap-2 rounded-xl border border-[#ececec] bg-white px-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+    <label className="flex h-11 items-center gap-2 rounded-sm border border-[#ececec] bg-white px-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
       {readOnly ? <span className="flex-1 text-sm text-[#b0b0b0]">{placeholder}</span> : null}
       {onChange ? (
         <input

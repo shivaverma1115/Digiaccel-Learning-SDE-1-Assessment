@@ -150,14 +150,14 @@ function TaskForm({
 
   return (
     <form
-      className="max-h-[92%] w-full overflow-y-auto rounded-t-3xl bg-white px-5 pb-6 pt-5 shadow-[0_-8px_30px_rgba(0,0,0,0.08)]"
+      className="max-h-[92%] w-full overflow-y-auto bg-white px-5 pb-6 pt-5 shadow-[0_-8px_30px_rgba(0,0,0,0.08)]"
       onSubmit={(event) => {
         event.preventDefault();
         void submit();
       }}
     >
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-[22px] font-bold tracking-tight text-[#1c1c1c]">
+        <h2 className="text-[22px] tracking-tight text-[#1c1c1c]">
           {editing ? "Edit Task" : "Add New Task"}
         </h2>
         <button type="button" aria-label="Close" onClick={onClose} className="text-2xl leading-none text-[#1c1c1c]">
@@ -183,13 +183,16 @@ function TaskForm({
 
       <p className="mb-2 text-sm text-[#8d8d8d]">Set Date</p>
       <label className="relative mb-4 flex h-12 items-center rounded-lg border border-[#e6e6e6] px-3">
-        <span className="text-base text-[#1c1c1c]">{date ? longDateLabel(date) : "Select date"}</span>
+        <span className="pointer-events-none text-base text-[#1c1c1c]">
+          {date ? longDateLabel(date) : "Select date"}
+        </span>
         <CalendarIcon />
         <input
           type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="absolute inset-0 cursor-pointer opacity-0"
+          onClick={openPicker}
+          className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-[0.01]"
         />
       </label>
 
@@ -222,6 +225,18 @@ function TaskForm({
   );
 }
 
+function openPicker(event: React.MouseEvent<HTMLInputElement>) {
+  const input = event.currentTarget;
+  if (typeof input.showPicker !== "function") {
+    return;
+  }
+  try {
+    input.showPicker();
+  } catch {
+    input.focus();
+  }
+}
+
 function TimeField({
   label,
   value,
@@ -233,13 +248,16 @@ function TimeField({
 }) {
   return (
     <label className="relative flex h-12 items-center gap-2 rounded-lg border border-[#e6e6e6] px-3 text-base text-[#8d8d8d]">
-      <ClockIcon />
-      <span className={value ? "text-[#1c1c1c]" : ""}>{value || label}</span>
+      <span className="pointer-events-none flex items-center gap-2">
+        <ClockIcon />
+        <span className={value ? "text-[#1c1c1c]" : ""}>{value || label}</span>
+      </span>
       <input
         type="time"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="absolute inset-0 cursor-pointer opacity-0"
+        onClick={openPicker}
+        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-[0.01]"
       />
     </label>
   );
@@ -256,7 +274,7 @@ function ClockIcon() {
 
 function CalendarIcon() {
   return (
-    <svg className="ml-auto" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg className="pointer-events-none ml-auto" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="4" y="5" width="16" height="15" rx="2" stroke="#1c1c1c" strokeWidth="1.6" />
       <path d="M8 3v4M16 3v4M4 10h16" stroke="#1c1c1c" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
